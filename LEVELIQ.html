@@ -1,0 +1,601 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b12">
+  <title>LEVELIQ — Trading Calculator</title>
+
+  <style>
+    :root {
+      --bg: #080b12;
+      --panel: #101522;
+      --panel2: #151c2b;
+      --border: #273147;
+      --text: #f4f6ff;
+      --muted: #929bb0;
+      --purple: #a78bfa;
+      --green: #5ee6a8;
+      --red: #ff8194;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(ellipse at 50% 0%, #211744 0%, transparent 42%),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+        BlinkMacSystemFont, "Segoe UI", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 20px;
+    }
+
+    .app { width: 100%; max-width: 490px; }
+
+    header { text-align: center; margin: 12px 0 28px; }
+
+    .logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 29px;
+      font-weight: 850;
+      letter-spacing: -1.3px;
+    }
+
+    .logo-icon {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      border-radius: 13px;
+      color: #0b0b13;
+      background: linear-gradient(135deg, #c4b5fd, #8b5cf6);
+      box-shadow: 0 0 28px #8b5cf633;
+      font-size: 24px;
+    }
+
+    .logo span { color: var(--purple); }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 9px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      margin-top: 17px;
+      padding: 7px 11px;
+      border: 1px solid #5ee6a82b;
+      border-radius: 30px;
+      background: #5ee6a80a;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--green);
+    }
+
+    .card {
+      background: linear-gradient(145deg, #121827, #0e1320);
+      border: 1px solid var(--border);
+      border-radius: 23px;
+      padding: 23px;
+      box-shadow: 0 22px 65px #00000035;
+    }
+
+    .section-label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 750;
+      letter-spacing: 1.5px;
+      margin-bottom: 13px;
+    }
+
+    .modes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      margin-bottom: 25px;
+    }
+
+    button { font: inherit; cursor: pointer; }
+
+    .mode {
+      border: 1px solid var(--border);
+      background: var(--panel2);
+      color: var(--muted);
+      padding: 14px 7px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 750;
+      transition: .2s;
+    }
+
+    .mode.active {
+      color: #d8ccff;
+      border-color: #a78bfa88;
+      background: #a78bfa15;
+      box-shadow: inset 0 0 0 1px #a78bfa16;
+    }
+
+    .field { margin-bottom: 18px; }
+
+    .field label {
+      display: block;
+      color: #c1c8d7;
+      font-size: 12px;
+      font-weight: 650;
+      margin-bottom: 9px;
+    }
+
+    .input-wrap { position: relative; }
+
+    input {
+      width: 100%;
+      padding: 15px 43px 15px 15px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      outline: none;
+      background: #090e18;
+      color: var(--text);
+      font-size: 19px;
+      font-weight: 650;
+      font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    input:focus {
+      border-color: var(--purple);
+      box-shadow: 0 0 0 3px #a78bfa16;
+    }
+
+    input::placeholder { color: #4e586d; }
+
+    .input-icon {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #717d95;
+      font-size: 13px;
+      pointer-events: none;
+    }
+
+    .range-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 5px 0 23px;
+      padding: 13px 14px;
+      border-radius: 11px;
+      background: #ffffff05;
+      border: 1px solid #ffffff0c;
+    }
+
+    .range-line span:first-child {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .range-value {
+      color: #d7c9ff;
+      font-size: 14px;
+      font-weight: 750;
+      overflow-wrap: anywhere;
+      text-align: right;
+    }
+
+    .result {
+      position: relative;
+      overflow: hidden;
+      border: 1px solid #a78bfa45;
+      background:
+        radial-gradient(ellipse at 90% 0%, #a78bfa18, transparent 55%),
+        #a78bfa08;
+      border-radius: 17px;
+      padding: 21px 18px;
+    }
+
+    .result-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .result-label {
+      color: #b4a1f5;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+    }
+
+    .result-badge {
+      color: var(--green);
+      background: #5ee6a811;
+      border: 1px solid #5ee6a82b;
+      border-radius: 6px;
+      padding: 5px 7px;
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .result-number {
+      font-size: clamp(32px, 9vw, 43px);
+      font-weight: 850;
+      letter-spacing: -1.5px;
+      overflow-wrap: anywhere;
+      margin: 15px 0 17px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .result-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding-top: 13px;
+      border-top: 1px solid #ffffff12;
+    }
+
+    .result-bottom span {
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .copy-btn {
+      border: 1px solid #a78bfa60;
+      color: #d7c9ff;
+      background: #a78bfa17;
+      border-radius: 9px;
+      padding: 9px 12px;
+      font-size: 11px;
+      font-weight: 750;
+      transition: .2s;
+    }
+
+    .copy-btn:hover { background: #a78bfa2c; }
+
+    .formula {
+      margin-top: 19px;
+      padding: 15px;
+      border: 1px solid var(--border);
+      background: #090e18;
+      border-radius: 12px;
+    }
+
+    .formula-title {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1.2px;
+      font-weight: 750;
+      margin-bottom: 9px;
+    }
+
+    .formula-code {
+      color: #c9baff;
+      font-size: 12px;
+      line-height: 1.8;
+      overflow-wrap: anywhere;
+      font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+    }
+
+    .note {
+      margin-top: 17px;
+      color: #707b91;
+      font-size: 11px;
+      line-height: 1.7;
+      text-align: center;
+    }
+
+    footer {
+      width: 100%;
+      max-width: 490px;
+      text-align: center;
+      padding: 28px 12px 6px;
+      margin-top: auto;
+    }
+
+    .footer-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #343047, transparent);
+      margin-bottom: 23px;
+    }
+
+    .built {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .creator {
+      color: var(--purple);
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: .3px;
+      margin-top: 7px;
+    }
+
+    .copyright {
+      color: #626c80;
+      font-size: 10px;
+      margin-top: 12px;
+      letter-spacing: .5px;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translate(-50%, 20px);
+      opacity: 0;
+      pointer-events: none;
+      color: #d9ffeb;
+      background: #153a2b;
+      border: 1px solid #5ee6a84a;
+      border-radius: 10px;
+      padding: 12px 17px;
+      font-size: 12px;
+      transition: .25s;
+      z-index: 5;
+      white-space: nowrap;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    @media (max-width: 380px) {
+      body { padding: 18px 11px; }
+      .card { padding: 17px; }
+      .logo { font-size: 26px; }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <header>
+      <div class="logo">
+        <div class="logo-icon">↗</div>
+        <div>LEVEL<span>IQ</span></div>
+      </div>
+      <div class="subtitle">Precision Trading Level Calculator</div>
+      <div class="status"><span class="dot"></span> CALCULATOR READY</div>
+    </header>
+
+    <section class="card">
+      <div class="section-label">01 / SELECT DIRECTION</div>
+
+      <div class="modes">
+        <button class="mode active" id="highToLow" type="button">
+          HIGH → LOW
+        </button>
+        <button class="mode" id="lowToHigh" type="button">
+          LOW → HIGH
+        </button>
+      </div>
+
+      <div class="section-label">02 / ENTER PRICE LEVELS</div>
+
+      <div class="field">
+        <label for="high">High Price</label>
+        <div class="input-wrap">
+          <input id="high" type="number" step="any"
+            placeholder="Enter high price" inputmode="decimal">
+          <span class="input-icon">H</span>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="low">Low Price</label>
+        <div class="input-wrap">
+          <input id="low" type="number" step="any"
+            placeholder="Enter low price" inputmode="decimal">
+          <span class="input-icon">L</span>
+        </div>
+      </div>
+
+      <div class="range-line">
+        <span>Total Range</span>
+        <span class="range-value" id="rangeValue">—</span>
+      </div>
+
+      <div class="result" aria-live="polite">
+        <div class="result-top">
+          <span class="result-label" id="resultLabel">HIGH → LOW LEVEL</span>
+          <span class="result-badge">LIVE RESULT</span>
+        </div>
+
+        <div class="result-number" id="result">—</div>
+
+        <div class="result-bottom">
+          <span id="resultHint">Enter both prices to calculate</span>
+          <button class="copy-btn" id="copyBtn" type="button">
+            Copy Result ↗
+          </button>
+        </div>
+      </div>
+
+      <div class="formula">
+        <div class="formula-title">CALCULATION FORMULA</div>
+        <div class="formula-code" id="formula">
+          H − 0.146 × (H − L)
+        </div>
+      </div>
+
+      <div class="note">
+        Enter valid High and Low prices. The result updates automatically
+        as you type.
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="footer-line"></div>
+    <div class="built">Built with passion by</div>
+    <div class="creator">Amanat Ali</div>
+    <div class="copyright">© 2026 LEVELIQ · ALL RIGHTS RESERVED</div>
+  </footer>
+
+  <div class="toast" id="toast" role="status">Copied!</div>
+
+  <script>
+    (() => {
+      const highInput = document.getElementById("high");
+      const lowInput = document.getElementById("low");
+      const resultEl = document.getElementById("result");
+      const rangeEl = document.getElementById("rangeValue");
+      const labelEl = document.getElementById("resultLabel");
+      const hintEl = document.getElementById("resultHint");
+      const formulaEl = document.getElementById("formula");
+      const highToLowBtn = document.getElementById("highToLow");
+      const lowToHighBtn = document.getElementById("lowToHigh");
+      const copyBtn = document.getElementById("copyBtn");
+      const toast = document.getElementById("toast");
+
+      let direction = "highToLow";
+      let currentResult = null;
+      let toastTimer;
+
+      function formatNumber(value) {
+        return value.toLocaleString("en-US", {
+          maximumFractionDigits: 10,
+          useGrouping: false
+        });
+      }
+
+      function setDirection(nextDirection) {
+        direction = nextDirection;
+
+        highToLowBtn.classList.toggle(
+          "active", direction === "highToLow"
+        );
+        lowToHighBtn.classList.toggle(
+          "active", direction === "lowToHigh"
+        );
+
+        labelEl.textContent = direction === "highToLow"
+          ? "HIGH → LOW LEVEL"
+          : "LOW → HIGH LEVEL";
+
+        formulaEl.textContent = direction === "highToLow"
+          ? "H − 0.146 × (H − L)"
+          : "L + 0.146 × (H − L)";
+
+        calculate();
+      }
+
+      function calculate() {
+        const highText = highInput.value.trim();
+        const lowText = lowInput.value.trim();
+
+        const high = Number(highText);
+        const low = Number(lowText);
+
+        currentResult = null;
+
+        if (
+          highText === "" || lowText === "" ||
+          !Number.isFinite(high) || !Number.isFinite(low)
+        ) {
+          resultEl.textContent = "—";
+          rangeEl.textContent = "—";
+          hintEl.textContent = "Enter both prices to calculate";
+          return;
+        }
+
+        if (high < low) {
+          resultEl.textContent = "Check prices";
+          rangeEl.textContent = "High must be ≥ Low";
+          hintEl.textContent = "Please correct your inputs";
+          return;
+        }
+
+        const priceRange = high - low;
+        const answer = direction === "highToLow"
+          ? high - 0.146 * priceRange
+          : low + 0.146 * priceRange;
+
+        if (!Number.isFinite(answer)) {
+          resultEl.textContent = "Invalid";
+          rangeEl.textContent = "—";
+          hintEl.textContent = "Please check your inputs";
+          return;
+        }
+
+        currentResult = answer;
+        resultEl.textContent = formatNumber(answer);
+        rangeEl.textContent = formatNumber(priceRange);
+        hintEl.textContent = direction === "highToLow"
+          ? "Calculated from High"
+          : "Calculated from Low";
+      }
+
+      function showToast(message) {
+        toast.textContent = message;
+        toast.classList.add("show");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toast.classList.remove("show");
+        }, 1800);
+      }
+
+      highToLowBtn.addEventListener("click", () => {
+        setDirection("highToLow");
+      });
+
+      lowToHighBtn.addEventListener("click", () => {
+        setDirection("lowToHigh");
+      });
+
+      highInput.addEventListener("input", calculate);
+      lowInput.addEventListener("input", calculate);
+
+      copyBtn.addEventListener("click", async () => {
+        if (currentResult === null) {
+          showToast("Calculate a result first");
+          return;
+        }
+
+        try {
+          await navigator.clipboard.writeText(formatNumber(currentResult));
+          showToast("Result copied ✓");
+        } catch (error) {
+          const temp = document.createElement("textarea");
+          temp.value = formatNumber(currentResult);
+          temp.style.position = "fixed";
+          temp.style.opacity = "0";
+          document.body.appendChild(temp);
+          temp.select();
+
+          const copied = document.execCommand("copy");
+          temp.remove();
+          showToast(copied ? "Result copied ✓" : "Copy failed");
+        }
+      });
+
+      calculate();
+    })();
+  </script>
+</body>
+</html>
